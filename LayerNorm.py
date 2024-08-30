@@ -15,3 +15,16 @@ class LayerNormalization(nn.Module):
         mean = x.mean(dim = -1, keepdim = True) # (batch, seq_len, 1)
         std = x.std(dim = -1, keepdim = True) # (batch, seq_len, 1)
         return self.alpha * (x - mean) / (std + self.eps) + self.bias
+    
+
+
+
+class ResidualConnection(nn.Module):
+    
+        def __init__(self, features, dropout):
+            super().__init__()
+            self.dropout = nn.Dropout(dropout)
+            self.norm = LayerNormalization(features)
+    
+        def forward(self, x, sublayer):
+            return x + self.dropout(sublayer(self.norm(x)))
